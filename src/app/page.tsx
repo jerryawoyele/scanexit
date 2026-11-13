@@ -118,9 +118,38 @@ export default function Shop() {
   };
 
   const start = async () => {
+    setStarting(true);
     const r = await api<{ cart: Cart }>("/api/cart", { method: "POST", body: JSON.stringify({ phone }) });
+    setStarting(false);
+    setConfirming(false);
     setCart(r.data.cart);
   };
+
+  // Phone number check before starting: a quick confirm, because the number (with the word)
+  // is how the order is found if the pass won't scan.
+  const [confirming, setConfirming] = useState(false);
+  const [starting, setStarting] = useState(false);
+  const [phoneErr, setPhoneErr] = useState("");
+  const phoneInput = useRef<HTMLInputElement>(null);
+  const digits = phone.replace(/\D/g, "");
+  const prettyPhone = (() => {
+    if (/^0\d{10}$/.test(digits)) return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+    if (/^234\d{10}$/.test(digits)) return `+234 ${digits.slice(3, 6)} ${digits.slice(6, 9)} ${digits.slice(9)}`;
+    return phone.trim();
+  })();
+  const askConfirm = () => {
+    if (digits.length < 10 || digits.length > 14) { setPhoneErr("Enter your full phone number, e.g. 0801 234 5678."); phoneInput.current?.focus(); return; }
+    setPhoneErr("");
+    setConfirming(true);
+  };
+  const editNumber = () => { setConfirming(false); setTimeout(() => phoneInput.current?.focus(), 50); };
+  useEffect(() => {
+    if (!confirming) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") editNumber(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [confirming]);
 
   const pay = async () => {
     setPaying(true);
@@ -171,13 +200,32 @@ export default function Shop() {
             <li>At the exit, scan your pass at the ScanExit belt and place your items on it</li>
           </ol>
         </div>
-        <form className="card" onSubmit={(e) => { e.preventDefault(); start(); }}>
+        <form className="card" onSubmit={(e) => { e.preventDefault(); askConfirm(); }} noValidate>
           <label className="field" htmlFor="phone">Your phone number</label>
-          <input id="phone" inputMode="tel" autoComplete="tel" placeholder="080 1234 5678" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <input id="phone" ref={phoneInput} inputMode="tel" autoComplete="tel" placeholder="080 1234 5678" value={phone}
+            aria-invalid={!!phoneErr} aria-describedby={phoneErr ? "phone-err" : undefined}
+            onChange={(e) => { setPhone(e.target.value); if (phoneErr) setPhoneErr(""); }} />
+          {phoneErr && <p id="phone-err" className="field-err">{phoneErr}</p>}
           <p className="muted" style={{ margin: "8px 0 14px" }}>If your pass won&apos;t scan at the exit, your number finds your order. You&apos;ll get a word to go with it, so only you can claim it.</p>
           <button className="block lg">Start shopping</button>
         </form>
         <p className="fineprint">Baskets may be checked at the exit.</p>
+        {confirming && (
+          <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) editNumber(); }}>
+            <div className="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-h" aria-describedby="confirm-d">
+              <div className="modal-icon" aria-hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5" /><path d="M11 18h2" /></svg>
+              </div>
+              <h2 id="confirm-h">Is this your number?</h2>
+              <div className="modal-phone num">{prettyPhone}</div>
+              <p id="confirm-d" className="muted">Make sure it&apos;s right. With your word, it&apos;s how we find your order if your pass won&apos;t scan at the exit.</p>
+              <div className="modal-actions">
+                <button className="ghost lg" onClick={editNumber}>Edit number</button>
+                <button className="lg" onClick={start} disabled={starting} autoFocus>{starting ? "Starting…" : "Continue"}</button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     );
   }

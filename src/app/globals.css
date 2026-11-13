@@ -285,3 +285,20 @@ main.belt { max-width: 720px; }
 .card.demo-next { border: 1.5px solid #cfe2d6; background: #fbfdf9; }
 .demo-belt-bar { height: 8px; border-radius: 6px; background: var(--brand-soft); overflow: hidden; margin: 4px 0 10px; }
 .demo-belt-bar span { display: block; height: 100%; background: var(--brand); border-radius: 6px; transition: width .45s ease; }
+
+/* Phone number confirmation */
+.field-err { color: var(--red); font-size: 14px; font-weight: 600; margin: 8px 0 0; }
+input[aria-invalid="true"] { border-color: var(--red); }
+.modal-backdrop { position: fixed; inset: 0; z-index: 80; background: rgba(14,26,20,.55); display: flex; align-items: flex-end; justify-content: center; padding: 16px; animation: fade-in .18s ease both; }
+.modal { width: 100%; max-width: 420px; background: var(--card); border-radius: 24px; padding: 24px 20px 20px; text-align: center; box-shadow: 0 30px 60px -20px rgba(0,0,0,.5); animation: rise-in .26s cubic-bezier(.2,.8,.2,1) both; margin-bottom: env(safe-area-inset-bottom); }
+.modal h2 { font-size: 20px; margin: 12px 0 6px; }
+.modal-icon { width: 52px; height: 52px; border-radius: 16px; background: var(--brand-soft); color: var(--brand); display: inline-grid; place-items: center; }
+.modal-icon svg { width: 26px; height: 26px; }
+.modal-phone { font-size: 28px; font-weight: 800; letter-spacing: .02em; color: var(--ink); margin: 4px 0 10px; }
+.modal .muted { margin: 0 0 18px; }
+.modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.modal-actions button { min-height: 52px; }
+@media (min-width: 640px) { .modal-backdrop { align-items: center; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .modal-backdrop, .modal { animation: none; } }
