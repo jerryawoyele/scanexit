@@ -64,7 +64,7 @@ export default function Receipt() {
         <div className="status amber"><ClockIcon /><div>Confirming your payment…<small>This page updates by itself.</small></div></div>
       )}
       {cart.status === "PAID" && qr && (
-        <div className="status green"><CheckIcon /><div>Paid<small>Scan this at the ScanExit belt, then place your items on it</small></div></div>
+        <div className="status green"><CheckIcon /><div>{demo ? "Paid · demo payment" : "Paid"}<small>{demo ? "This payment was simulated for the demo. No real money was charged." : "Scan this at the ScanExit belt, then place your items on it"}</small></div></div>
       )}
       {cart.status === "PAID" && demo && (
         <div className="card demo-next">
@@ -96,7 +96,7 @@ export default function Receipt() {
             <div className="ticket-cut" />
             <div className="ticket-sum">
               <div><div className="big">{cart.itemCount}</div><div className="muted">item{cart.itemCount === 1 ? "" : "s"} in your basket</div></div>
-              <div style={{ textAlign: "right" }}><div className="eyebrow">Paid</div><div className="total">{naira(cart.totalKobo)}</div></div>
+              <div style={{ textAlign: "right" }}><div className="eyebrow">{demo ? "Demo payment" : "Paid"}</div><div className="total">{naira(cart.totalKobo)}</div></div>
             </div>
           </div>
           <p className="fineprint" style={{ marginBottom: 16 }}>Keep this screen open. The code refreshes by itself and works once.</p>

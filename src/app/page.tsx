@@ -77,9 +77,44 @@ export default function Shop() {
     else flash(false, "Could not add item. Try again.");
   }, []);
 
-  const setQty = async (productId: string, qty: number) => {
-    const r = await api<{ cart: Cart }>("/api/cart/items", { method: "PATCH", body: JSON.stringify({ productId, qty }) });
-    if (r.ok) setCart(r.data.cart);
+  // + / − update the basket on screen instantly; the server is told a moment later (quick taps are
+  // combined into one update). Prices and totals still come from the server when it answers.
+  const qtyTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const qtyPending = useRef<Record<string, number>>({});
+  const inFlight = useRef(0);
+  const sendQty = async (productId: string) => {
+    const qty = qtyPending.current[productId];
+    delete qtyPending.current[productId];
+    delete qtyTimers.current[productId];
+    inFlight.current++;
+    const r = await api<{ cart: Cart; error?: string }>("/api/cart/items", { method: "PATCH", body: JSON.stringify({ productId, qty }) });
+    inFlight.current--;
+    const idle = inFlight.current === 0 && Object.keys(qtyPending.current).length === 0;
+    if (r.ok && idle) setCart(r.data.cart);
+    else if (!r.ok) {
+      if (r.data.error === "CART_LOCKED") { window.location.href = "/receipt"; return; }
+      flash(false, "Couldn't update the quantity. Try again.");
+      const fresh = await api<{ cart: Cart | null }>("/api/cart");
+      if (fresh.ok && fresh.data.cart) setCart(fresh.data.cart);
+    }
+  };
+  const flushQty = async () => {
+    const ids = Object.keys(qtyPending.current);
+    ids.forEach((id) => clearTimeout(qtyTimers.current[id]));
+    await Promise.all(ids.map((id) => sendQty(id)));
+  };
+  const setQty = (productId: string, qty: number) => {
+    const n = Math.max(0, Math.min(99, Math.floor(qty)));
+    setCart((c) => {
+      if (!c) return c;
+      const items = n === 0
+        ? c.items.filter((i) => i.productId !== productId)
+        : c.items.map((i) => (i.productId === productId ? { ...i, qty: n, lineKobo: n * i.unitPriceKobo } : i));
+      return { ...c, items, itemCount: items.reduce((t, i) => t + i.qty, 0), totalKobo: items.reduce((t, i) => t + i.lineKobo, 0) };
+    });
+    qtyPending.current[productId] = n;
+    clearTimeout(qtyTimers.current[productId]);
+    qtyTimers.current[productId] = setTimeout(() => sendQty(productId), 350);
   };
 
   const start = async () => {
@@ -89,6 +124,7 @@ export default function Shop() {
 
   const pay = async () => {
     setPaying(true);
+    await flushQty();
     const r = await api<{ url: string; error?: string }>("/api/checkout", { method: "POST" });
     if (r.ok) window.location.href = r.data.url;
     else { setPaying(false); flash(false, r.data.error === "EMPTY_CART" ? "Your cart is empty." : r.data.error === "PAYMENTS_NOT_CONFIGURED" ? "Payments are not available right now. Please pay at a payment point." : "Payment could not start. Try again."); }
