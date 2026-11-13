@@ -111,7 +111,7 @@ export default function Belt() {
 
   const top = (
     <div className="topbar">
-      <Brand label="ScanExit belt" sub={storeName} />
+      <Brand label="ScanExit exit check" sub={storeName} />
       <button className="ghost small" onClick={lock}><span className="btn-label"><LockIcon />Lock</span></button>
     </div>
   );
@@ -119,14 +119,14 @@ export default function Belt() {
   if (!authed) {
     return (
       <main>
-        <div className="topbar"><Brand label="ScanExit belt" sub={storeName} /></div>
+        <div className="topbar"><Brand label="ScanExit exit check" sub={storeName} /></div>
         <form className="card" onSubmit={unlock}>
-          <h1 style={{ marginBottom: 6 }}>Start the belt screen</h1>
+          <h1 style={{ marginBottom: 6 }}>Start the exit check screen</h1>
           <p className="muted" style={{ marginTop: 0 }}>Staff: enter the store PIN once. The screen then stays ready for customers.</p>
           {pinErr && <div className="toast err">{pinErr}</div>}
           <label className="field" htmlFor="pin">Staff PIN</label>
           <input id="pin" type="password" inputMode="numeric" autoComplete="off" value={pin} onChange={(e) => setPin(e.target.value)} style={{ marginBottom: 14, letterSpacing: ".3em", fontSize: 20 }} />
-          <button className="block lg">Open belt screen</button>
+          <button className="block lg">Open exit check screen</button>
         </form>
       </main>
     );
@@ -149,7 +149,7 @@ export default function Belt() {
         {top}
         <div className={`status ${changed ? "amber" : "green"}`}>{changed ? <AlertIcon /> : <CheckIcon />}<div>Check complete{changed ? " with changes" : ""}<small>{changed ? "Settle the amounts below, then the customer can go." : "The customer can go."}</small></div></div>
         {result.collectKobo > 0 && <div className="card amount-card"><div><div className="eyebrow">Collect</div><div className="muted">Extra items · POS, transfer or cash</div></div><div className="total">{naira(result.collectKobo)}</div></div>}
-        {result.refundKobo > 0 && <div className="card amount-card"><div><div className="eyebrow">Refund</div><div className="muted">Paid but not on the belt</div></div><div className="total">{naira(result.refundKobo)}</div></div>}
+        {result.refundKobo > 0 && <div className="card amount-card"><div><div className="eyebrow">Refund</div><div className="muted">Paid but not seen at the exit check</div></div><div className="total">{naira(result.refundKobo)}</div></div>}
         {result.unknownCount > 0 && <div className="card"><b>{result.unknownCount} item(s) not in the product list.</b> <span className="muted">Price them at a payment point.</span></div>}
         <button className="block lg" onClick={reset}>Next customer</button>
       </main>
@@ -193,7 +193,7 @@ export default function Belt() {
     <main className="belt">
       {top}
       {!red ? (
-        <div className="status belt-run"><ScanIcon /><div className="grow">Place your items on the belt, one at a time<small>The camera checks each item against your receipt.</small></div>
+        <div className="status belt-run"><ScanIcon /><div className="grow">Place your items on the conveyor, one at a time<small>The camera checks each item against your receipt.</small></div>
           <div className="belt-count num"><b>{seenOnReceipt}</b>/{paidTotal}</div></div>
       ) : (
         <div className="status red"><StopIcon /><div>Items don&apos;t match the receipt<small>An attendant will sort this out. Please wait a moment.</small></div></div>
@@ -229,8 +229,8 @@ export default function Belt() {
 
       {simulate && !red && (
         <div className="card belt-sim">
-          <div className="eyebrow">Demo: simulated belt camera</div>
-          <p className="muted" style={{ margin: "4px 0 10px" }}>In a store, the camera reports each item by itself. Here, tap an item to pass it along the belt.</p>
+          <div className="eyebrow">Demo: simulated exit check camera</div>
+          <p className="muted" style={{ margin: "4px 0 10px" }}>In a store, the camera reports each item by itself. Here, tap an item to pass it under the camera.</p>
           <div className="belt-sim-grid">
             {run.lines.filter((l) => l.paid > 0).map((l) => (
               <button key={l.productId} className="secondary small" onClick={() => pass(l.barcode)}>+ {l.name}</button>

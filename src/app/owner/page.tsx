@@ -80,7 +80,7 @@ export default function Owner() {
               </div>
               <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
                 <a href={s.qr} download={`${s.slug}-entrance-qr.png`}><button className="small">Download QR</button></a>
-                <a href={`${s.url}/belt`} target="_blank" rel="noreferrer"><button className="secondary small">Belt</button></a>
+                <a href={`${s.url}/belt`} target="_blank" rel="noreferrer"><button className="secondary small">Exit check</button></a>
                 <a href={`${s.url}/checker`} target="_blank" rel="noreferrer"><button className="ghost small">Manual check</button></a>
                 <a href={`${s.url}/admin`} target="_blank" rel="noreferrer"><button className="secondary small">Admin</button></a>
                 <button className="ghost small" onClick={() => { setEditing(editing === s.id ? null : s.id); setPins({ staffPin: "", adminPin: "" }); }}>{editing === s.id ? "Close" : "Change PINs"}</button>

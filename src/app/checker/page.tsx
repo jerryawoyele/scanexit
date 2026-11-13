@@ -98,7 +98,7 @@ export default function Checker() {
         <div className="topbar"><Brand label="Manual check" sub={storeName} /></div>
         <form className="card" onSubmit={unlock}>
           <h1 style={{ marginBottom: 6 }}>Staff sign-in</h1>
-          <p className="muted" style={{ marginTop: 0 }}>Enter the staff PIN to open the manual check, the backup for when the exit belt is down.</p>
+          <p className="muted" style={{ marginTop: 0 }}>Enter the staff PIN to open the manual check, the backup for when the exit check system is down.</p>
           {pinErr && <div className="toast err">{pinErr}</div>}
           <label className="field" htmlFor="pin">Staff PIN</label>
           <input id="pin" type="password" inputMode="numeric" autoComplete="off" value={pin} onChange={(e) => setPin(e.target.value)} style={{ marginBottom: 14, letterSpacing: ".3em", fontSize: 20 }} />
@@ -128,7 +128,7 @@ export default function Checker() {
     return (
       <main>
         <div className="topbar"><Brand label="Manual check" sub={storeName} />{lockBtn}</div>
-        <div className="card"><Scanner onCode={(code) => { if (!busy) lookup({ token: code }); }} /><p className="muted" style={{ margin: "10px 0 0", textAlign: "center" }}>Backup for when the belt is down: scan the customer&apos;s pass.</p></div>
+        <div className="card"><Scanner onCode={(code) => { if (!busy) lookup({ token: code }); }} /><p className="muted" style={{ margin: "10px 0 0", textAlign: "center" }}>Backup for when the exit check system is down: scan the customer&apos;s pass.</p></div>
         <form className="card" onSubmit={(e) => { e.preventDefault(); if (phone.trim() && word.trim()) lookup({ phone, word }); }}>
           <h2>Got disconnected? Find the order</h2>
           <p className="muted" style={{ marginTop: 0 }}>Ask the customer for their phone number and the word shown on their phone.</p>

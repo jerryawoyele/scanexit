@@ -198,7 +198,7 @@ export default function Shop() {
           <ol className="steps">
             <li>Scan each item as you shop</li>
             <li>Pay on your phone</li>
-            <li>At the exit, scan your pass at the ScanExit belt and place your items on it</li>
+            <li>At the exit, scan your pass at the exit check and place your items on it</li>
           </ol>
         </div>
         <form className="card" onSubmit={(e) => { e.preventDefault(); askConfirm(); }} noValidate>
@@ -274,7 +274,7 @@ export default function Shop() {
             </div>
           ))}
           {cart.verifyWord && (
-            <p className="sheet-note">Your word is <b>{cart.verifyWord}</b>. If your pass won&apos;t scan at the exit belt, use your phone number and this word.</p>
+            <p className="sheet-note">Your word is <b>{cart.verifyWord}</b>. If your pass won&apos;t scan at the exit check, use your phone number and this word.</p>
           )}
         </div>
       </section>

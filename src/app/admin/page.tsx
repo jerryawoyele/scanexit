@@ -88,13 +88,13 @@ export default function Admin() {
         )}
       </div>
       <div className="card">
-        <h2>Exit belt</h2>
-        <p className="muted" style={{ marginTop: 0 }}>Open <b>/belt</b> on the screen at the belt and unlock it with the staff PIN. The belt&apos;s AI computer reports each item it sees to <b>/api/belt/item</b> on this store&apos;s address, sending <code>{"{ \"barcode\": \"…\" }"}</code> with the header <code>x-station-key</code>.</p>
+        <h2>Exit check system</h2>
+        <p className="muted" style={{ marginTop: 0 }}>Open <b>/belt</b> on the exit check screen and unlock it with the staff PIN. The exit check system&apos;s AI computer reports each item it sees to <b>/api/belt/item</b> on this store&apos;s address, sending <code>{"{ \"barcode\": \"…\" }"}</code> with the header <code>x-station-key</code>.</p>
         <div className="row" style={{ flexWrap: "wrap" }}>
           <code className="grow" style={{ background: "#f4f6f1", padding: "12px 14px", borderRadius: 12, wordBreak: "break-all" }}>{showKey ? data?.stationKey : "••••••••••••••••••••••••"}</code>
-          <button className="secondary small" onClick={() => setShowKey((v) => !v)}>{showKey ? "Hide key" : "Show belt key"}</button>
+          <button className="secondary small" onClick={() => setShowKey((v) => !v)}>{showKey ? "Hide key" : "Show exit check key"}</button>
         </div>
-        <p className="muted" style={{ margin: "8px 0 0" }}>Keep this key secret: it lets a device report items on this store&apos;s belt. Backup when the belt is down: staff use <b>/checker</b>.</p>
+        <p className="muted" style={{ margin: "8px 0 0" }}>Keep this key secret: it lets a device report items on this store&apos;s exit check system. Backup when the exit check system is down: staff use <b>/checker</b>.</p>
       </div>
       <div className="card">
         <h2>Import products</h2>

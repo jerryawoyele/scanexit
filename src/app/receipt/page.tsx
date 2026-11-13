@@ -64,16 +64,16 @@ export default function Receipt() {
         <div className="status amber"><ClockIcon /><div>Confirming your payment…<small>This page updates by itself.</small></div></div>
       )}
       {cart.status === "PAID" && qr && (
-        <div className="status green"><CheckIcon /><div>{demo ? "Paid · demo payment" : "Paid"}<small>{demo ? "This payment was simulated for the demo. No real money was charged." : "Scan this at the ScanExit belt, then place your items on it"}</small></div></div>
+        <div className="status green"><CheckIcon /><div>{demo ? "Paid · demo payment" : "Paid"}<small>{demo ? "This payment was simulated for the demo. No real money was charged." : "Scan this at the exit check, then place your items on it"}</small></div></div>
       )}
       {cart.status === "PAID" && demo && (
         <div className="card demo-next">
           <div className="eyebrow">Demo · next step</div>
-          <h2 style={{ margin: "6px 0 6px" }}>Now, the exit belt</h2>
+          <h2 style={{ margin: "6px 0 6px" }}>Now, the exit check</h2>
           {!belt ? (
             <>
-              <p className="muted" style={{ marginTop: 0 }}>In a store, you&apos;d scan this pass at the ScanExit belt and place your items on it. Its AI camera checks each one against what you paid for.</p>
-              <button className="block lg accent" onClick={runDemoBelt}>Try the exit belt</button>
+              <p className="muted" style={{ marginTop: 0 }}>In a store, you&apos;d scan this pass at the exit check system and place your items on it. Its AI camera checks each one against what you paid for.</p>
+              <button className="block lg accent" onClick={runDemoBelt}>Try the exit check</button>
             </>
           ) : (
             <>
@@ -109,7 +109,7 @@ export default function Receipt() {
         </>
       )}
       {cart.status === "CHECKED" && (
-        <div className="status green"><CheckIcon /><div>{demo ? "All items match" : "All done"}<small>{demo ? "The belt checked every item. You're free to go!" : "Checked at the exit. Thank you for shopping!"}</small></div></div>
+        <div className="status green"><CheckIcon /><div>{demo ? "All items match" : "All done"}<small>{demo ? "The exit check confirmed every item. You're free to go!" : "Checked at the exit. Thank you for shopping!"}</small></div></div>
       )}
       {cart.status === "CHECKED" && demo && (
         <div className="card demo-next">
@@ -117,7 +117,7 @@ export default function Receipt() {
           <ol className="steps" style={{ marginTop: 8 }}>
             <li>You scanned items with your phone</li>
             <li>You paid on your phone</li>
-            <li>The exit belt checked every item</li>
+            <li>The exit check system checked every item</li>
           </ol>
           <div style={{ marginTop: 14, display: "grid", gap: 10 }}>
             <a href="/" onClick={async (e) => { e.preventDefault(); await fetch("/api/cart", { method: "DELETE" }); location.href = "/"; }}><button className="block lg">Start a new demo trip</button></a>
