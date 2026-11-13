@@ -28,12 +28,33 @@ export interface CartView {
   items: CartItemView[];
 }
 
-/** The cart in this browser's cookie, only if it belongs to the given store. */
-export async function currentCartId(storeId: string): Promise<string | null> {
+/**
+ * A shopper who hasn't paid must enter their phone number again after this many minutes with no
+ * activity (a scan or a basket change). Paid orders never time out.
+ */
+export const IDLE_MINUTES = Number(process.env.SHOPPER_IDLE_MINUTES) || 10;
+
+/**
+ * This browser's cart for the given store. `expired`: an unpaid cart that has been idle too long;
+ * it's kept (re-entering the same number picks it up again) but can't be used until then.
+ */
+export async function cartSession(storeId: string): Promise<{ id: string | null; expired: boolean; secondsLeft: number | null }> {
   const id = (await cookies()).get(CART_COOKIE)?.value;
-  if (!id) return null;
-  const [c] = await q(`SELECT id FROM carts WHERE id = $1 AND store_id = $2`, [id, storeId]);
-  return c ? c.id : null;
+  if (!id) return { id: null, expired: false, secondsLeft: null };
+  const [c] = await q<{ id: string; status: string; left: number }>(
+    `SELECT id, status, EXTRACT(EPOCH FROM (updated_at + interval '${IDLE_MINUTES} minutes' - now()))::int AS left
+       FROM carts WHERE id = $1 AND store_id = $2`,
+    [id, storeId]
+  );
+  if (!c) return { id: null, expired: false, secondsLeft: null };
+  if (c.status !== "OPEN") return { id: c.id, expired: false, secondsLeft: null };
+  if (c.left <= 0) return { id: null, expired: true, secondsLeft: 0 };
+  return { id: c.id, expired: false, secondsLeft: c.left };
+}
+
+/** The cart in this browser's cookie, only if it belongs to the given store and hasn't timed out. */
+export async function currentCartId(storeId: string): Promise<string | null> {
+  return (await cartSession(storeId)).id;
 }
 
 /** Live prices while OPEN; frozen prices once checkout starts. */

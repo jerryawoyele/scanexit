@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Scanner, { preloadReader } from "@/components/Scanner";
 import Thumb from "@/components/Thumb";
-import { Brand, ScanIcon, BagIcon, Splash, AlertIcon } from "@/components/Icons";
+import { Brand, ScanIcon, BagIcon, Splash, AlertIcon, ClockIcon } from "@/components/Icons";
 import { api, naira } from "@/lib/client";
 
 type Item = { productId: string; barcode: string; name: string; imageUrl: string | null; qty: number; unitPriceKobo: number; lineKobo: number };
@@ -10,6 +10,8 @@ type Cart = { id: string; status: string; totalKobo: number; itemCount: number; 
 type StoreInfo = { name: string; slug: string };
 
 const MIN_SPLASH_MS = 700; // keep the loading screen up long enough to read, never a flicker
+const IDLE_MS = 10 * 60 * 1000; // unpaid shoppers re-enter their number after 10 minutes without activity (server decides)
+type CartRes = { cart: Cart | null; expired?: boolean; secondsLeft?: number | null };
 
 export default function Shop() {
   const [store, setStore] = useState<StoreInfo | null | undefined>(undefined);
@@ -19,7 +21,13 @@ export default function Shop() {
   const [phone, setPhone] = useState("");
   const [manual, setManual] = useState("");
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const plusTip = useRef(false);
+  // Products already given the "use + / −" hint (once per product).
+  const hinted = useRef<Set<string> | null>(null);
+  const [hl, setHl] = useState<string | null>(null);
+  // Session timeout: when this shopper's unpaid session runs out (server is the judge).
+  const [timedOut, setTimedOut] = useState(false);
+  const deadline = useRef(Date.now() + IDLE_MS);
+  const bump = () => { deadline.current = Date.now() + IDLE_MS; };
   const [sheetOpen, setSheetOpen] = useState(false);
   const [drag, setDrag] = useState<number | null>(null);
   const dragFrom = useRef<{ y: number; base: number } | null>(null);
@@ -45,7 +53,7 @@ export default function Shop() {
       try {
       const [s, c] = await Promise.all([
         api<{ store: StoreInfo | null; root?: boolean }>("/api/store"),
-        api<{ cart: Cart | null }>("/api/cart"),
+        api<CartRes>("/api/cart"),
       ]);
       await new Promise((r) => setTimeout(r, Math.max(0, MIN_SPLASH_MS - (Date.now() - started))));
       if (!s.ok || !s.data.store) { setRoot(!!s.data.root); setStore(null); return; }
@@ -53,30 +61,60 @@ export default function Shop() {
       if (cartNow && (cartNow.status === "PAID" || cartNow.status === "CHECKED")) { window.location.href = "/receipt"; return; }
       setStore(s.data.store);
       setCart(cartNow);
+      if (c.ok && c.data.expired) setTimedOut(true);
+      if (c.ok && c.data.secondsLeft) deadline.current = Date.now() + c.data.secondsLeft * 1000;
       } catch {
         setOffline(true); // no connection: don't leave the loading screen up forever
       }
     })();
   }, []);
 
-  const flash = (ok: boolean, text: string) => { setMsg({ ok, text }); setTimeout(() => setMsg(null), 2500); };
+  const flash = (ok: boolean, text: string, ms = 2500) => { setMsg({ ok, text }); setTimeout(() => setMsg(null), ms); };
+
+  // Ask the server whether this session is still live; if it timed out, go back to the phone screen.
+  const checkSession = useCallback(async () => {
+    const r = await api<CartRes>("/api/cart");
+    if (!r.ok) return;
+    if (r.data.expired) { setCart(null); setPhone(""); setTimedOut(true); setSheetOpen(false); setMsg(null); return; }
+    if (r.data.cart) {
+      setCart(r.data.cart);
+      if (r.data.secondsLeft) deadline.current = Date.now() + r.data.secondsLeft * 1000;
+    }
+  }, []);
+
+  const shopping = !!cart && cart.status === "OPEN";
+  useEffect(() => {
+    if (!shopping) return;
+    const tick = setInterval(() => { if (Date.now() > deadline.current) checkSession(); }, 15000);
+    const onShow = () => { if (document.visibilityState === "visible") checkSession(); };
+    document.addEventListener("visibilitychange", onShow);
+    return () => { clearInterval(tick); document.removeEventListener("visibilitychange", onShow); };
+  }, [shopping, checkSession]);
 
   const add = useCallback(async (barcode: string) => {
     const r = await api<{ cart: Cart; error?: string; already?: boolean }>("/api/cart/items", { method: "POST", body: JSON.stringify({ barcode }) });
     if (r.ok) {
+      bump();
       setCart(r.data.cart);
       const it = r.data.cart.items.find((i) => i.barcode === barcode.trim());
-      if (r.data.already) {
-        // Rescanning an item already in the basket changes nothing. Explain it once, then stay quiet.
-        let shown = false;
-        try { shown = sessionStorage.getItem("sx_plus_tip") === "1"; sessionStorage.setItem("sx_plus_tip", "1"); } catch { /* storage off */ }
-        if (!shown && !plusTip.current) flash(true, `${it?.name ?? "This item"} is already in your basket. Use + to add more.`);
-        plusTip.current = true;
+      if (r.data.already && it) {
+        // Rescanning adds nothing: the first time for each product, show how to change the quantity.
+        if (!hinted.current) {
+          try { hinted.current = new Set(JSON.parse(sessionStorage.getItem("sx_hinted") ?? "[]")); } catch { hinted.current = new Set(); }
+        }
+        if (!hinted.current.has(it.productId)) {
+          hinted.current.add(it.productId);
+          try { sessionStorage.setItem("sx_hinted", JSON.stringify([...hinted.current])); } catch { /* storage off */ }
+          flash(true, `${it.name} is already in your basket. Open your basket and use + or − to change how many.`, 4000);
+          setHl(it.productId);
+          setTimeout(() => setHl((h) => (h === it.productId ? null : h)), 4000);
+        }
       } else flash(true, `Added: ${it?.name ?? barcode}`);
     } else if (r.data.error === "NOT_FOUND") flash(false, "Item not found. Please take this item to the exit desk.");
+    else if (r.data.error === "NO_CART") checkSession();
     else if (r.data.error === "CART_LOCKED") window.location.href = "/receipt";
     else flash(false, "Could not add item. Try again.");
-  }, []);
+  }, [checkSession]);
 
   // + / − update the basket on screen instantly; the server is told a moment later (quick taps are
   // combined into one update). Prices and totals still come from the server when it answers.
@@ -91,9 +129,11 @@ export default function Shop() {
     const r = await api<{ cart: Cart; error?: string }>("/api/cart/items", { method: "PATCH", body: JSON.stringify({ productId, qty }) });
     inFlight.current--;
     const idle = inFlight.current === 0 && Object.keys(qtyPending.current).length === 0;
+    if (r.ok) bump();
     if (r.ok && idle) setCart(r.data.cart);
     else if (!r.ok) {
       if (r.data.error === "CART_LOCKED") { window.location.href = "/receipt"; return; }
+      if (r.data.error === "NO_CART") { checkSession(); return; }
       flash(false, "Couldn't update the quantity. Try again.");
       const fresh = await api<{ cart: Cart | null }>("/api/cart");
       if (fresh.ok && fresh.data.cart) setCart(fresh.data.cart);
@@ -120,10 +160,14 @@ export default function Shop() {
 
   const start = async () => {
     setStarting(true);
-    const r = await api<{ cart: Cart }>("/api/cart", { method: "POST", body: JSON.stringify({ phone }) });
+    const r = await api<{ cart: Cart; restored?: boolean }>("/api/cart", { method: "POST", body: JSON.stringify({ phone }) });
     setStarting(false);
     setConfirming(false);
+    if (!r.ok) { flash(false, "Couldn't start. Check your connection and try again."); return; }
+    bump();
+    setTimedOut(false);
     setCart(r.data.cart);
+    if (r.data.restored && r.data.cart.itemCount > 0) flash(true, "Welcome back. Your basket is just as you left it.");
   };
 
   // Phone number check before starting: a quick confirm, because the number (with the word)
@@ -157,6 +201,7 @@ export default function Shop() {
     await flushQty();
     const r = await api<{ url: string; error?: string }>("/api/checkout", { method: "POST" });
     if (r.ok) window.location.href = r.data.url;
+    else if (r.data.error === "NO_CART") { setPaying(false); checkSession(); }
     else { setPaying(false); flash(false, r.data.error === "EMPTY_CART" ? "Your cart is empty." : r.data.error === "PAYMENTS_NOT_CONFIGURED" ? "Payments are not available right now. Please pay at a payment point." : "Payment could not start. Try again."); }
   };
 
@@ -189,6 +234,10 @@ export default function Shop() {
     return (
       <main>
         <div className="topbar"><Brand sub={store.name} /></div>
+        {msg && <div role="status" className={`toast floating ${msg.ok ? "ok" : "err"}`}>{msg.text}</div>}
+        {timedOut && (
+          <div className="status amber" role="status"><ClockIcon /><div>Your session timed out<small>For your security, enter your phone number again after 10 minutes without activity. Use the same number to pick up your basket where you left off.</small></div></div>
+        )}
         <section className="hero">
           <span className="hero-scan"><ScanIcon /></span>
           <h1 className="display">Skip the <em>queue.</em></h1>
@@ -259,7 +308,7 @@ export default function Shop() {
           </form>
           {cart.items.length === 0 && <div className="empty"><BagIcon />No items yet. Point your camera at a barcode.</div>}
           {cart.items.map((i) => (
-            <div className="item" key={i.productId}>
+            <div className={`item ${hl === i.productId ? "hl" : ""}`} key={i.productId}>
               <Thumb src={i.imageUrl} alt={i.name} />
               <div className="grow">
                 <div className="item-name">{i.name}</div>

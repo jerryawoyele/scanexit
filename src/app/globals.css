@@ -310,3 +310,7 @@ input[aria-invalid="true"] { border-color: var(--red); }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes rise-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .modal-backdrop, .modal { animation: none; } }
+
+/* Rescanned item: its + / − buttons pulse so the shopper sees where to change the quantity. */
+.item.hl .qty { animation: qty-pulse 1s ease-in-out 3; box-shadow: 0 0 0 2px var(--brand); }
+@keyframes qty-pulse { 0%, 100% { box-shadow: 0 0 0 2px rgba(11,90,58,.9); } 50% { box-shadow: 0 0 0 6px rgba(11,90,58,.18); } }

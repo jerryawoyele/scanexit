@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
      ON CONFLICT (cart_id, product_id) DO NOTHING RETURNING id`,
     [cart.id, p.id, p.price_kobo]
   );
-  if (added.length) await q(`UPDATE carts SET updated_at=now() WHERE id=$1`, [cart.id]);
+  await q(`UPDATE carts SET updated_at=now() WHERE id=$1`, [cart.id]); // any scan counts as activity
   return NextResponse.json({ cart: await loadCart(cart.id), already: added.length === 0 });
 }
 

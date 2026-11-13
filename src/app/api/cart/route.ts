@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { q } from "@/lib/db";
-import { CART_COOKIE, currentCartId, loadCart } from "@/lib/cart";
+import { CART_COOKIE, cartSession, loadCart } from "@/lib/cart";
 import { requireStore } from "@/lib/store";
 import { newVerifyWord } from "@/lib/words";
 
@@ -9,17 +10,28 @@ const cookieOpts = { httpOnly: true, sameSite: "lax" as const, secure: process.e
 export async function GET() {
   const s = await requireStore();
   if ("error" in s) return s.error;
-  const id = await currentCartId(s.store.id);
+  const { id, expired, secondsLeft } = await cartSession(s.store.id);
   const cart = id ? await loadCart(id) : null;
-  return NextResponse.json({ cart });
+  return NextResponse.json({ cart, expired, secondsLeft });
 }
 
-/** Start a new cart. The phone number gets a random verification word, used by staff to look up the order. */
+/**
+ * Start shopping. The phone number gets a random verification word, used by staff to look up the order.
+ * After a timeout, entering the same number again in the same browser picks up the same basket.
+ */
 export async function POST(req: NextRequest) {
   const s = await requireStore();
   if ("error" in s) return s.error;
   const body = await req.json().catch(() => ({}));
   const phone = typeof body.phone === "string" ? body.phone.replace(/[^\d+]/g, "").slice(0, 16) || null : null;
+  const prev = (await cookies()).get(CART_COOKIE)?.value;
+  if (prev && phone) {
+    const [same] = await q<{ id: string }>(
+      `UPDATE carts SET updated_at = now() WHERE id = $1 AND store_id = $2 AND phone = $3 AND status = 'OPEN' RETURNING id`,
+      [prev, s.store.id, phone]
+    );
+    if (same) return NextResponse.json({ cart: await loadCart(same.id), restored: true });
+  }
   const word = phone ? newVerifyWord() : null;
   const [c] = await q<{ id: string }>(
     `INSERT INTO carts (store_id, phone, verify_word) VALUES ($1, $2, $3) RETURNING id`,
