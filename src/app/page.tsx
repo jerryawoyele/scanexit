@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
-import Scanner from "@/components/Scanner";
+import Scanner, { preloadReader } from "@/components/Scanner";
 import Thumb from "@/components/Thumb";
 import { Brand, ScanIcon, BagIcon, Splash, AlertIcon } from "@/components/Icons";
 import { api, naira } from "@/lib/client";
@@ -39,6 +39,7 @@ export default function Shop() {
   const [paying, setPaying] = useState(false);
 
   useEffect(() => {
+    preloadReader(); // ready by the time the camera opens
     const started = Date.now();
     (async () => {
       try {
@@ -232,7 +233,7 @@ export default function Shop() {
 
   return (
     <div className="shop">
-      <Scanner fullscreen onCode={add} hint="Point at a product barcode" />
+      <Scanner fullscreen onCode={add} hint="Point at a barcode" />
 
       <div className="shop-top">
         <div className="brand-pill"><Brand sub={store.name} /></div>

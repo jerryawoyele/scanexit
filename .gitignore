@@ -11,3 +11,6 @@ tsconfig.tsbuildinfo
 
 .vercel
 .env*
+
+# copied from node_modules at build time
+/public/zxing_reader.wasm

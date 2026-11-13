@@ -244,7 +244,15 @@ main.belt { max-width: 720px; }
 /* Full-screen camera (shopper cart) */
 .scanner-full { position: absolute; inset: 0; background: #0b120e; overflow: hidden; }
 .scanner-full .video { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 0; object-fit: cover; }
-.scanner-hint { position: absolute; left: 50%; top: 38%; transform: translateX(-50%); background: rgba(14,26,20,.62); color: #fff; font-weight: 700; font-size: 14px; padding: 8px 14px; border-radius: 999px; white-space: nowrap; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.scanner-hint { position: absolute; left: 50%; top: 38%; transform: translateX(-50%); background: rgba(14,26,20,.62); color: #fff; font-weight: 700; font-size: 14px; padding: 8px 16px; border-radius: 18px; white-space: nowrap; text-align: center; pointer-events: none; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.scanner-hint small { display: block; font-size: 12px; font-weight: 600; opacity: .82; margin-top: 1px; }
+/* Flashlight: bottom-right, above the basket sheet's peek on the cart page. */
+.scan-torch { position: absolute; right: 12px; top: 12px; z-index: 3; width: 46px; height: 46px; min-height: 0; padding: 0; border-radius: 999px; display: grid; place-items: center; background: rgba(14,26,20,.6); color: #fff; border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: none; }
+.scan-torch.on { background: #fff; color: #0b120e; }
+.scanner-full .scan-torch { top: auto; right: 16px; bottom: calc(92px + 16px + env(safe-area-inset-bottom)); width: 52px; height: 52px; }
+/* Tap-to-focus ring */
+.scan-focus { position: absolute; width: 64px; height: 64px; margin: -32px 0 0 -32px; border: 2px solid #fff; border-radius: 16px; pointer-events: none; animation: focus-in .9s ease-out both; }
+@keyframes focus-in { 0% { transform: scale(1.4); opacity: 0; } 25% { transform: scale(1); opacity: 1; } 100% { opacity: 0; } }
 .scanner-error { position: absolute; left: 20px; right: 20px; top: 26%; text-align: center; color: #fff; font-weight: 700; background: rgba(14,26,20,.7); padding: 16px; border-radius: 16px; }
 @media (prefers-reduced-motion: reduce) { .scan-lock { animation: none; } }
 
