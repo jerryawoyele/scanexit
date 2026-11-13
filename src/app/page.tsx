@@ -19,6 +19,7 @@ export default function Shop() {
   const [phone, setPhone] = useState("");
   const [manual, setManual] = useState("");
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const plusTip = useRef(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [drag, setDrag] = useState<number | null>(null);
   const dragFrom = useRef<{ y: number; base: number } | null>(null);
@@ -60,11 +61,17 @@ export default function Shop() {
   const flash = (ok: boolean, text: string) => { setMsg({ ok, text }); setTimeout(() => setMsg(null), 2500); };
 
   const add = useCallback(async (barcode: string) => {
-    const r = await api<{ cart: Cart; error?: string }>("/api/cart/items", { method: "POST", body: JSON.stringify({ barcode }) });
+    const r = await api<{ cart: Cart; error?: string; already?: boolean }>("/api/cart/items", { method: "POST", body: JSON.stringify({ barcode }) });
     if (r.ok) {
       setCart(r.data.cart);
       const it = r.data.cart.items.find((i) => i.barcode === barcode.trim());
-      flash(true, `Added: ${it?.name ?? barcode}`);
+      if (r.data.already) {
+        // Rescanning an item already in the basket changes nothing. Explain it once, then stay quiet.
+        let shown = false;
+        try { shown = sessionStorage.getItem("sx_plus_tip") === "1"; sessionStorage.setItem("sx_plus_tip", "1"); } catch { /* storage off */ }
+        if (!shown && !plusTip.current) flash(true, `${it?.name ?? "This item"} is already in your basket. Use + to add more.`);
+        plusTip.current = true;
+      } else flash(true, `Added: ${it?.name ?? barcode}`);
     } else if (r.data.error === "NOT_FOUND") flash(false, "Item not found. Please take this item to the exit desk.");
     else if (r.data.error === "CART_LOCKED") window.location.href = "/receipt";
     else flash(false, "Could not add item. Try again.");

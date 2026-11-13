@@ -30,5 +30,5 @@ export async function GET() {
   }
   const { receiptNonce, ...safe } = cart;
   void receiptNonce;
-  return NextResponse.json({ cart: safe, qr });
+  return NextResponse.json({ cart: safe, qr, demo: devMode() });
 }

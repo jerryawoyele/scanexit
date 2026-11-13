@@ -22,7 +22,7 @@ async function openCart() {
   return { id, storeId: s.store.id };
 }
 
-/** Add one unit of a scanned barcode. */
+/** Add a scanned product to the basket (once; quantity is changed with PATCH). */
 export async function POST(req: NextRequest) {
   const cart = await openCart();
   if ("error" in cart) return cart.error;
@@ -42,13 +42,14 @@ export async function POST(req: NextRequest) {
     );
   }
   if (!p) return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
-  await q(
+  // A product is added once by scanning; the shopper changes the quantity with + and −.
+  const added = await q(
     `INSERT INTO cart_items (cart_id, product_id, qty, unit_price_kobo) VALUES ($1,$2,1,$3)
-     ON CONFLICT (cart_id, product_id) DO UPDATE SET qty = cart_items.qty + 1`,
+     ON CONFLICT (cart_id, product_id) DO NOTHING RETURNING id`,
     [cart.id, p.id, p.price_kobo]
   );
-  await q(`UPDATE carts SET updated_at=now() WHERE id=$1`, [cart.id]);
-  return NextResponse.json({ cart: await loadCart(cart.id) });
+  if (added.length) await q(`UPDATE carts SET updated_at=now() WHERE id=$1`, [cart.id]);
+  return NextResponse.json({ cart: await loadCart(cart.id), already: added.length === 0 });
 }
 
 /** Set quantity of an item; 0 removes it. */

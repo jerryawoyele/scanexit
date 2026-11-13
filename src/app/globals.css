@@ -280,3 +280,8 @@ main.belt { max-width: 720px; }
 .sheet-note b { color: var(--brand); letter-spacing: .04em; text-transform: uppercase; }
 .sheet-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 14px calc(20px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); overscroll-behavior: contain; }
 @media (prefers-reduced-motion: reduce) { .sheet { transition: none; } }
+
+/* Demo: next step after paying */
+.card.demo-next { border: 1.5px solid #cfe2d6; background: #fbfdf9; }
+.demo-belt-bar { height: 8px; border-radius: 6px; background: var(--brand-soft); overflow: hidden; margin: 4px 0 10px; }
+.demo-belt-bar span { display: block; height: 100%; background: var(--brand); border-radius: 6px; transition: width .45s ease; }
