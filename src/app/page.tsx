@@ -23,7 +23,7 @@ export default function Shop() {
   const [drag, setDrag] = useState<number | null>(null);
   const dragFrom = useRef<{ y: number; base: number } | null>(null);
   // Drag the basket sheet up/down; on release it snaps open or closed.
-  const sheetTravel = () => (typeof window === "undefined" ? 0 : Math.round(window.innerHeight * 0.86) - 128);
+  const sheetTravel = () => (typeof window === "undefined" ? 0 : Math.round(window.innerHeight * 0.72) - 92);
   const dragStart = (e: React.PointerEvent) => { dragFrom.current = { y: e.clientY, base: sheetOpen ? 0 : sheetTravel() }; };
   const dragMove = (e: React.PointerEvent) => {
     if (!dragFrom.current) return;
@@ -141,7 +141,7 @@ export default function Shop() {
 
   return (
     <div className="shop">
-      <Scanner fullscreen active={!sheetOpen} onCode={add} hint="Point at a product barcode" />
+      <Scanner fullscreen onCode={add} hint="Point at a product barcode" />
 
       <div className="shop-top">
         <div className="brand-pill"><Brand sub={store.name} /></div>
@@ -153,18 +153,17 @@ export default function Shop() {
         <div className="sheet-head" onPointerDown={dragStart} onPointerMove={dragMove} onPointerUp={dragEnd} onPointerCancel={dragEnd}>
           <button className="sheet-grab" onClick={() => setSheetOpen((o) => !o)} aria-expanded={sheetOpen} aria-label={sheetOpen ? "Close basket" : "Open basket"}><span /></button>
           <div className="row between sheet-sum">
-            <button className="sheet-title" onClick={() => setSheetOpen((o) => !o)}>
-              <span className="eyebrow">Your basket</span>
+            <button className="sheet-title" onClick={() => setSheetOpen((o) => !o)} aria-label={sheetOpen ? "Close basket" : "Open basket"}>
               <span className="total num">{naira(cart.totalKobo)}</span>
-              <span className="muted num">{cart.itemCount} item{cart.itemCount === 1 ? "" : "s"} · tap to {sheetOpen ? "close" : "open"}</span>
+              <span className="muted num">{cart.itemCount} item{cart.itemCount === 1 ? "" : "s"} in basket <span aria-hidden>{sheetOpen ? "▾" : "▴"}</span></span>
             </button>
-            <button className="accent lg" style={{ minWidth: 132 }} onClick={pay} disabled={paying || cart.itemCount === 0}>{paying ? "Opening…" : "Pay now"}</button>
+            <button className="accent sheet-pay" onClick={pay} disabled={paying || cart.itemCount === 0}>{paying ? "Opening…" : "Pay now"}</button>
           </div>
         </div>
         <div className="sheet-body">
-          <form className="row" style={{ marginBottom: 14 }} onSubmit={(e) => { e.preventDefault(); if (manual.trim()) { add(manual); setManual(""); } }}>
+          <form className="row sheet-add" onSubmit={(e) => { e.preventDefault(); if (manual.trim()) { add(manual); setManual(""); } }}>
             <input className="grow" inputMode="numeric" aria-label="Barcode number" placeholder="Type a barcode number" value={manual} onChange={(e) => setManual(e.target.value)} />
-            <button type="submit" className="secondary">Add</button>
+            <button type="submit" className="secondary small">Add</button>
           </form>
           {cart.items.length === 0 && <div className="empty"><BagIcon />No items yet. Point your camera at a barcode.</div>}
           {cart.items.map((i) => (
@@ -183,10 +182,7 @@ export default function Shop() {
             </div>
           ))}
           {cart.verifyWord && (
-            <div className="word-card" style={{ marginTop: 14 }}>
-              <div><div className="eyebrow">Your word</div><div className="word">{cart.verifyWord}</div></div>
-              <div className="muted">If your pass won&apos;t scan at the exit belt, use your phone number and this word.</div>
-            </div>
+            <p className="sheet-note">Your word is <b>{cart.verifyWord}</b>. If your pass won&apos;t scan at the exit belt, use your phone number and this word.</p>
           )}
         </div>
       </section>
