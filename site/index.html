@@ -92,7 +92,9 @@ header.scrolled{border-bottom-color:var(--line)}
 .dot.g{background:var(--green);color:var(--lime)}
 .dot.l{background:var(--lime);color:var(--green-ink)}
 .dot svg{width:20px;height:20px}
-@media(max-width:920px){.hero-grid{grid-template-columns:1fr}.hero-art{min-height:520px;margin-top:8px}.phone.tilt{transform:none}.float.f1{left:2%}.float.f2{right:2%}}
+@media(max-width:920px){.hero-grid{grid-template-columns:1fr}.hero-art{min-height:0;margin-top:8px;flex-direction:column;gap:12px;padding:28px 0 22px}.phone.tilt{transform:none}
+  /* on phones the cards sit below the phone instead of covering its screen */
+  .float{position:static;width:min(320px,100%);z-index:1}.blob{inset:0 2%;transform:rotate(-2deg)}}
 
 /* sections */
 section{padding:88px 0}
