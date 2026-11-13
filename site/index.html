@@ -3,15 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ScanExit · Shop. Scan. Exit.</title>
+<title>ScanExit</title>
 <meta name="description" content="ScanExit cuts supermarket queues: shoppers scan items on their phone as they shop, pay instantly, then unload onto the ScanExit belt, where an AI camera checks every item before they walk out. No app, no extra tills.">
 <meta name="theme-color" content="#0b5a3a">
-<meta property="og:title" content="ScanExit · Shorter queues. No extra tills.">
+<meta property="og:title" content="ScanExit">
 <meta property="og:description" content="Shoppers scan and pay on their phone, then walk out after a quick check. Built for supermarkets.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://scanexit.com">
 <meta property="og:image" content="https://scanexit.com/assets/cart-full.webp">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230b5a3a'/%3E%3Cg fill='none' stroke='%23c8f169' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 12v-1.5A2.5 2.5 0 0 1 10.5 8H12M20 8h1.5A2.5 2.5 0 0 1 24 10.5V12M24 20v1.5a2.5 2.5 0 0 1-2.5 2.5H20M12 24h-1.5A2.5 2.5 0 0 1 8 21.5V20'/%3E%3Cpath d='M12 13v6M15 13v6M18 13v6M21 13v6'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -69,7 +70,8 @@ header.scrolled{border-bottom-color:var(--line)}
 @media(max-width:350px){.nav-cta .l-mid{display:none}.nav-cta .l-short{display:inline}}
 
 /* hero */
-.hero{padding:56px 0 40px;overflow-x:clip}
+.hero{padding:20px 0 40px;overflow-x:clip}
+@media(max-width:920px){.hero{padding-top:12px}}
 .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
 .hero h1 em{font-style:normal;color:var(--green);position:relative;white-space:nowrap}
 .hero h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.06em;height:.2em;background:var(--lime);z-index:-1;border-radius:4px}

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { q } from "@/lib/db";
 import { currentCartId, loadCart } from "@/lib/cart";
 import { requireStore } from "@/lib/store";
+import { devMode } from "@/lib/paystack";
+
+const DEMO_PRICE_KOBO = 150000; // ₦1,500
 
 async function openCart() {
   const s = await requireStore();
@@ -24,10 +27,20 @@ export async function POST(req: NextRequest) {
   const cart = await openCart();
   if ("error" in cart) return cart.error;
   const { barcode } = await req.json();
-  const [p] = await q(
+  const code = String(barcode ?? "").trim().slice(0, 64);
+  let [p] = await q(
     `SELECT id, price_kobo FROM products WHERE store_id = $1 AND barcode = $2 AND active`,
-    [cart.storeId, String(barcode ?? "").trim()]
+    [cart.storeId, code]
   );
+  if (!p && devMode() && /^[0-9A-Za-z-]{4,64}$/.test(code)) {
+    // Demo only (simulated payments): any real barcode the camera reads becomes a "Demo product",
+    // so visitors can try the whole trip with whatever is in their kitchen.
+    [p] = await q(
+      `INSERT INTO products (store_id, barcode, name, price_kobo) VALUES ($1, $2, 'Demo product', $3)
+       ON CONFLICT (store_id, barcode) DO UPDATE SET active = TRUE RETURNING id, price_kobo`,
+      [cart.storeId, code, DEMO_PRICE_KOBO]
+    );
+  }
   if (!p) return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
   await q(
     `INSERT INTO cart_items (cart_id, product_id, qty, unit_price_kobo) VALUES ($1,$2,1,$3)

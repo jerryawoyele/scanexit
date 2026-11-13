@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Scanner from "@/components/Scanner";
 import Thumb from "@/components/Thumb";
 import { Brand, ScanIcon, BagIcon, Splash, AlertIcon } from "@/components/Icons";
@@ -19,7 +19,22 @@ export default function Shop() {
   const [phone, setPhone] = useState("");
   const [manual, setManual] = useState("");
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [scanning, setScanning] = useState(true);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [drag, setDrag] = useState<number | null>(null);
+  const dragFrom = useRef<{ y: number; base: number } | null>(null);
+  // Drag the basket sheet up/down; on release it snaps open or closed.
+  const sheetTravel = () => (typeof window === "undefined" ? 0 : Math.round(window.innerHeight * 0.86) - 128);
+  const dragStart = (e: React.PointerEvent) => { dragFrom.current = { y: e.clientY, base: sheetOpen ? 0 : sheetTravel() }; };
+  const dragMove = (e: React.PointerEvent) => {
+    if (!dragFrom.current) return;
+    const dy = e.clientY - dragFrom.current.y;
+    if (Math.abs(dy) < 6 && drag === null) return;
+    setDrag(Math.min(sheetTravel(), Math.max(0, dragFrom.current.base + dy)));
+  };
+  const dragEnd = () => {
+    if (dragFrom.current && drag !== null) setSheetOpen(drag < sheetTravel() / 2);
+    dragFrom.current = null; setDrag(null);
+  };
   const [paying, setPaying] = useState(false);
 
   useEffect(() => {
@@ -125,51 +140,56 @@ export default function Shop() {
   }
 
   return (
-    <main>
-      <div className="topbar">
-        <Brand sub={store.name} />
-        <button className={scanning ? "ghost small" : "small"} onClick={() => setScanning((s) => !s)}>
-          <span className="btn-label">{scanning ? "Hide camera" : <><ScanIcon />Scan</>}</span>
-        </button>
+    <div className="shop">
+      <Scanner fullscreen active={!sheetOpen} onCode={add} hint="Point at a product barcode" />
+
+      <div className="shop-top">
+        <div className="brand-pill"><Brand sub={store.name} /></div>
+        {cart.verifyWord && <div className="word-pill" title="Your word"><small>Word</small>{cart.verifyWord}</div>}
       </div>
-      {cart.verifyWord && (
-        <div className="word-card">
-          <div><div className="eyebrow">Your word</div><div className="word">{cart.verifyWord}</div></div>
-          <div className="muted">If your pass won&apos;t scan at the exit belt, use your phone number and this word.</div>
-        </div>
-      )}
       {msg && <div role="status" className={`toast floating ${msg.ok ? "ok" : "err"}`}>{msg.text}</div>}
-      {scanning && <div className="card"><Scanner onCode={add} /><p className="muted" style={{ margin: "10px 0 0", textAlign: "center" }}>Point the camera at the product barcode.</p></div>}
-      <form className="card row" onSubmit={(e) => { e.preventDefault(); if (manual.trim()) { add(manual); setManual(""); } }}>
-        <input className="grow" inputMode="numeric" aria-label="Barcode number" placeholder="Type a barcode number" value={manual} onChange={(e) => setManual(e.target.value)} />
-        <button type="submit" className="secondary">Add</button>
-      </form>
-      <div className="card">
-        <div className="row between" style={{ marginBottom: 6 }}>
-          <h2 style={{ margin: 0 }}>Your basket</h2>
-          <span className="muted num">{cart.itemCount} item{cart.itemCount === 1 ? "" : "s"}</span>
-        </div>
-        {cart.items.length === 0 && <div className="empty"><BagIcon />No items yet. Scan your first product.</div>}
-        {cart.items.map((i) => (
-          <div className="item" key={i.productId}>
-            <Thumb src={i.imageUrl} alt={i.name} />
-            <div className="grow">
-              <div className="item-name">{i.name}</div>
-              <div className="muted num">{naira(i.unitPriceKobo)} each</div>
-              <div className="price" style={{ fontWeight: 800, marginTop: 2 }}>{naira(i.lineKobo)}</div>
-            </div>
-            <div className="qty">
-              <button aria-label={`Remove one ${i.name}`} onClick={() => setQty(i.productId, i.qty - 1)}>−</button>
-              <span className="n num">{i.qty}</span>
-              <button aria-label={`Add one ${i.name}`} onClick={() => setQty(i.productId, i.qty + 1)}>+</button>
-            </div>
+
+      <section className={`sheet ${sheetOpen ? "open" : ""}`} style={drag !== null ? { transform: `translateY(${drag}px)`, transition: "none" } : undefined} aria-label="Your basket">
+        <div className="sheet-head" onPointerDown={dragStart} onPointerMove={dragMove} onPointerUp={dragEnd} onPointerCancel={dragEnd}>
+          <button className="sheet-grab" onClick={() => setSheetOpen((o) => !o)} aria-expanded={sheetOpen} aria-label={sheetOpen ? "Close basket" : "Open basket"}><span /></button>
+          <div className="row between sheet-sum">
+            <button className="sheet-title" onClick={() => setSheetOpen((o) => !o)}>
+              <span className="eyebrow">Your basket</span>
+              <span className="total num">{naira(cart.totalKobo)}</span>
+              <span className="muted num">{cart.itemCount} item{cart.itemCount === 1 ? "" : "s"} · tap to {sheetOpen ? "close" : "open"}</span>
+            </button>
+            <button className="accent lg" style={{ minWidth: 132 }} onClick={pay} disabled={paying || cart.itemCount === 0}>{paying ? "Opening…" : "Pay now"}</button>
           </div>
-        ))}
-      </div>
-      <div className="bar"><div className="row between">
-        <div><div className="muted num">Total · {cart.itemCount} item{cart.itemCount === 1 ? "" : "s"}</div><div className="total">{naira(cart.totalKobo)}</div></div>
-        <button className="accent lg" style={{ minWidth: 150 }} onClick={pay} disabled={paying || cart.itemCount === 0}>{paying ? "Opening…" : "Pay now"}</button>
-      </div></div>
-    </main>
+        </div>
+        <div className="sheet-body">
+          <form className="row" style={{ marginBottom: 14 }} onSubmit={(e) => { e.preventDefault(); if (manual.trim()) { add(manual); setManual(""); } }}>
+            <input className="grow" inputMode="numeric" aria-label="Barcode number" placeholder="Type a barcode number" value={manual} onChange={(e) => setManual(e.target.value)} />
+            <button type="submit" className="secondary">Add</button>
+          </form>
+          {cart.items.length === 0 && <div className="empty"><BagIcon />No items yet. Point your camera at a barcode.</div>}
+          {cart.items.map((i) => (
+            <div className="item" key={i.productId}>
+              <Thumb src={i.imageUrl} alt={i.name} />
+              <div className="grow">
+                <div className="item-name">{i.name}</div>
+                <div className="muted num">{naira(i.unitPriceKobo)} each</div>
+                <div className="price" style={{ fontWeight: 800, marginTop: 2 }}>{naira(i.lineKobo)}</div>
+              </div>
+              <div className="qty">
+                <button aria-label={`Remove one ${i.name}`} onClick={() => setQty(i.productId, i.qty - 1)}>−</button>
+                <span className="n num">{i.qty}</span>
+                <button aria-label={`Add one ${i.name}`} onClick={() => setQty(i.productId, i.qty + 1)}>+</button>
+              </div>
+            </div>
+          ))}
+          {cart.verifyWord && (
+            <div className="word-card" style={{ marginTop: 14 }}>
+              <div><div className="eyebrow">Your word</div><div className="word">{cart.verifyWord}</div></div>
+              <div className="muted">If your pass won&apos;t scan at the exit belt, use your phone number and this word.</div>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
