@@ -111,7 +111,7 @@ export default function Belt() {
 
   const top = (
     <div className="topbar">
-      <Brand label="ScanExit exit check" sub={storeName} />
+      <Brand label="ScanExit check" sub={storeName} />
       <button className="ghost small" onClick={lock}><span className="btn-label"><LockIcon />Lock</span></button>
     </div>
   );
@@ -119,7 +119,7 @@ export default function Belt() {
   if (!authed) {
     return (
       <main>
-        <div className="topbar"><Brand label="ScanExit exit check" sub={storeName} /></div>
+        <div className="topbar"><Brand label="ScanExit check" sub={storeName} /></div>
         <form className="card" onSubmit={unlock}>
           <h1 style={{ marginBottom: 6 }}>Start the exit check screen</h1>
           <p className="muted" style={{ marginTop: 0 }}>Staff: enter the store PIN once. The screen then stays ready for customers.</p>
