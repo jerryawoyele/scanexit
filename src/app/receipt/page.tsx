@@ -103,7 +103,7 @@ export default function Receipt() {
           {cart.verifyWord && (
             <div className="word-card">
               <div><div className="eyebrow">Your word</div><div className="word">{cart.verifyWord}</div></div>
-              <div className="muted">If your pass won&apos;t scan, use your phone number and this word at the belt.</div>
+              <div className="muted">If your pass won&apos;t scan, use your phone number and this word at the exit check.</div>
             </div>
           )}
         </>
