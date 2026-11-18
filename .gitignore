@@ -14,3 +14,6 @@ tsconfig.tsbuildinfo
 
 # copied from node_modules at build time
 /public/zxing_reader.wasm
+
+# Sales leads: private, never committed
+/leads/
