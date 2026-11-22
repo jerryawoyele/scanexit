@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ScanExit</title>
-<meta name="description" content="ScanExit cuts supermarket queues. Shoppers scan items on their phone, pay instantly, and your cashier clears them at the exit with a fast AI check of every item. No app, no extra tills.">
+<meta name="description" content="ScanExit cuts supermarket queues. Shoppers scan items on their phone, pay instantly, and your cashier checks every item at the exit on a tablet photo list. No app, no extra tills.">
 <meta name="theme-color" content="#0b5a3a">
 <meta property="og:title" content="ScanExit">
 <meta property="og:description" content="Shoppers scan and pay on their phone, then walk out after a quick check. Built for supermarkets.">
@@ -31,7 +31,7 @@
       "url": "https://scanexit.com/",
       "logo": "https://scanexit.com/assets/icon-512.png",
       "email": "support@scanexit.com",
-      "description": "Scan-as-you-shop, pay-on-phone and an AI exit check system for supermarkets.",
+      "description": "Scan-as-you-shop, pay-on-phone and a fast tablet exit check for supermarkets.",
       "areaServed": "NG"
     },
     {
@@ -46,7 +46,7 @@
       "name": "ScanExit",
       "serviceType": "Scan-and-pay checkout system for supermarkets",
       "provider": { "@id": "https://scanexit.com/#org" },
-      "description": "Shoppers scan items on their phone as they shop, pay instantly, and leave after a cashier confirms every item with the ScanExit AI exit check."
+      "description": "Shoppers scan items on their phone as they shop, pay instantly, and leave after a cashier checks every item against the paid list at the ScanExit exit check."
     }
   ]
 }
@@ -266,7 +266,7 @@ footer a{text-decoration:none;font-weight:700;color:var(--ink-2)}
     </a>
     <nav class="nav-links" aria-label="Main">
       <a href="#how">How it works</a>
-      <a href="#lane">Exit check system</a>
+      <a href="#lane">Exit check</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
       <a class="btn btn-dark nav-cta" href="https://demo.scanexit.com" target="_blank" rel="noopener">Try live demo</a>
@@ -281,7 +281,7 @@ footer a{text-decoration:none;font-weight:700;color:var(--ink-2)}
       <div class="hero-copy">
         <div class="eyebrow">Shop. Scan. Exit.</div>
         <h1 style="margin-top:14px">Shorter queues. <em>No extra tills.</em></h1>
-        <p class="lead">With ScanExit, shoppers scan items on their own phone as they shop, pay on the spot, and at the exit your cashier confirms every item quickly with the AI exit check. Each cashier clears far more shoppers, and your tills stay open for everyone else.</p>
+        <p class="lead">With ScanExit, shoppers scan items on their own phone as they shop, pay on the spot, and at the exit your cashier checks their basket against a photo list of what they paid for. Each cashier clears far more shoppers, and your tills stay open for everyone else.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="#book">Book a free consultation</a>
           <a class="btn btn-ghost" href="https://demo.scanexit.com" target="_blank" rel="noopener">
@@ -289,7 +289,7 @@ footer a{text-decoration:none;font-weight:700;color:var(--ink-2)}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
           </a>
         </div>
-        <div class="trust"><span>No app to download</span><span>Payment confirmed instantly</span><span>Every item checked by AI camera</span></div>
+        <div class="trust"><span>No app to download</span><span>Payment confirmed instantly</span><span>Every item checked at the exit</span></div>
       </div>
       <div class="hero-art" aria-hidden="true">
         <div class="blob"></div>
@@ -322,7 +322,7 @@ footer a{text-decoration:none;font-weight:700;color:var(--ink-2)}
       <div class="section-head">
         <div class="eyebrow">How it works</div>
         <h2 id="how-h">Three steps. No app for shoppers.</h2>
-        <p>ScanExit runs in the shopper's phone browser. They start from a QR banner at your entrance and finish at the exit check system.</p>
+        <p>ScanExit runs in the shopper's phone browser. They start from a QR banner at your entrance and finish at the exit check.</p>
       </div>
       <div class="steps">
         <article class="step">
@@ -340,7 +340,7 @@ footer a{text-decoration:none;font-weight:700;color:var(--ink-2)}
         <article class="step">
           <div class="step-n">3</div>
           <h3>The exit check, then out</h3>
-          <p>Their phone shows a one-time ScanExit pass. At the exit, your cashier scans the pass and runs their items through the exit check system, where the AI camera checks every one.</p>
+          <p>Their phone shows a one-time ScanExit pass. At the exit, your cashier scans the pass and checks their items against a photo list of what they paid for.</p>
           <div class="shot"><img src="assets/receipt.webp" alt="ScanExit pass: Paid, with a QR code, 5 items and 99,900 naira" width="1170" height="2532" decoding="async"></div>
         </article>
       </div>
@@ -350,49 +350,17 @@ footer a{text-decoration:none;font-weight:700;color:var(--ink-2)}
   <!-- THE LANE -->
   <section id="lane" aria-labelledby="lane-h" style="padding-top:0">
     <div class="wrap lane-grid">
-      <div class="tablet"><img src="assets/belt-running.webp" alt="ScanExit check screen: place your items on the conveyor, 2 of 4 items checked, with each receipt item ticking off" width="1668" height="1000" decoding="async"></div>
+      <div class="tablet"><img src="assets/tablet-checklist.jpg" alt="ScanExit exit check on a tablet: the paid items as product photos with quantities, 4 of 6 seen, with seen items ticked" width="1668" height="1280" decoding="async"></div>
       <div>
-        <div class="eyebrow">The exit check system</div>
+        <div class="eyebrow">The exit check</div>
         <h2 id="lane-h" style="margin-top:12px">Your cashiers check every item. Fast.</h2>
-        <p class="lead" style="margin-top:16px">A smart conveyor at your exit, run by your cashier. Its AI camera checks each item against what the shopper paid for, far faster than checking a basket by hand, so each cashier clears many more shoppers and your queues keep moving at peak times.</p>
+        <p class="lead" style="margin-top:16px">A tablet on a stand at your exit, run by your cashier. When they scan the shopper&#39;s pass, the receipt appears as product photos with quantities, and they tap each item off as they see it in the basket. It&#39;s far quicker than reading a paper receipt line by line, so each cashier clears many more shoppers at peak times.</p>
         <ul class="ticks">
-          <li><div><b>The cashier scans the shopper's pass</b><span>Their paid list appears on the exit check screen.</span></div></li>
-          <li><div><b>The items go on the conveyor</b><span>They pass the AI camera one at a time and tick off the list, while the cashier watches the screen.</span></div></li>
-          <li><div><b>Green: bag and go</b><span>Everything matches, the pass is used up, and the shopper leaves.</span></div></li>
-          <li><div><b>Red: the cashier fixes only that item</b><span>The screen shows exactly what's missing or extra, and what to collect or refund.</span></div></li>
+          <li><div><b>The cashier scans the shopper's pass</b><span>What they paid for appears as product photos, each with its quantity.</span></div></li>
+          <li><div><b>Tap each item as you see it</b><span>Each tap ticks one off. Nothing to read or type.</span></div></li>
+          <li><div><b>All seen: bag and go</b><span>The pass is used up, and the shopper leaves.</span></div></li>
+          <li><div><b>Something missing or extra? Fix only that item</b><span>The screen shows exactly what to refund or collect, and everything else goes through.</span></div></li>
         </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- THE MACHINE -->
-  <section id="machine" aria-labelledby="machine-h" style="padding-top:0">
-    <div class="wrap">
-      <div class="section-head">
-        <div class="eyebrow">What your store gets</div>
-        <h2 id="machine-h">Meet the ScanExit check system.</h2>
-        <p>A compact smart conveyor that sits at your exit. Installed and set up by us, included in your plan.</p>
-      </div>
-      <div class="machine-grid">
-        <figure class="machine">
-          <div class="machine-art">
-            <img src="assets/exit-belt.webp" alt="The ScanExit check system: an aluminium-frame conveyor with an overhead AI camera, entry and exit sensors, a conveyor motor and a status light" width="930" height="750" decoding="async">
-            <span class="pin" style="left:51%;top:19%">1</span>
-            <span class="pin" style="left:22%;top:31%">2</span>
-            <span class="pin" style="left:6%;top:29%">3</span>
-            <span class="pin" style="left:86%;top:41%">4</span>
-            <span class="pin" style="left:63%;top:73%">5</span>
-          </div>
-          <figcaption>Design render. The installed unit may differ in finish and size.</figcaption>
-        </figure>
-        <ol class="parts">
-          <li><b>AI camera</b><span>Looks down on the conveyor, reads each item's barcode and recognises the product.</span></li>
-          <li><b>Entry sensor</b><span>Counts every item as it goes onto the conveyor, so nothing slips past uncounted.</span></li>
-          <li><b>Conveyor motor</b><span>Moves items under the camera one at a time, at a steady speed.</span></li>
-          <li><b>Exit sensor</b><span>Confirms each item has passed the camera before it reaches the bagging end.</span></li>
-          <li><b>Status light</b><span>Green when the basket matches the receipt; red calls your attendant.</span></li>
-          <li class="nonum"><b>Vision AI computer</b><span>Built into the frame. It matches what the camera sees against the shopper's paid receipt and shows the result on the exit check screen.</span></li>
-        </ol>
       </div>
     </div>
   </section>
@@ -408,7 +376,7 @@ footer a{text-decoration:none;font-weight:700;color:var(--ink-2)}
         <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>No fake alerts</h3><p>An order counts as paid only when the payment provider confirms it. Screenshots don't work.</p></div>
         <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h.01M15 9h.01M9 15h6"/></svg></div><h3>One-time pass</h3><p>Each pass is signed, expires after 15 minutes and works once. Old or copied passes are refused.</p></div>
         <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V7l-8-4-8 4v5"/><path d="M4 12v5l8 4 8-4v-5"/><path d="M12 12v9M4 7l8 5 8-5"/></svg></div><h3>Your prices only</h3><p>Prices come from your product list, never from the shopper's phone, and are locked at checkout.</p></div>
-        <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></div><h3>Every item checked</h3><p>The exit check system's camera checks each item against the paid receipt. Anything extra is flagged before the shopper leaves.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></div><h3>Every item checked</h3><p>Your cashier checks each item against the paid list at the exit. Anything extra is collected for before the shopper leaves.</p></div>
       </div>
       <div class="admin-shot"><img src="assets/admin.webp" alt="ScanExit store dashboard: today's sales, paid orders, baskets checked at exit and today's orders" width="1980" height="1580" decoding="async"></div>
     </div>
@@ -420,9 +388,9 @@ footer a{text-decoration:none;font-weight:700;color:var(--ink-2)}
       <div>
         <div class="eyebrow">Pricing</div>
         <h2 id="price-h" style="margin-top:12px">A plan built around your store.</h2>
-        <p class="lead" style="margin-top:16px">The exit check system is included, so there's no hardware to buy. Talk to us: we'll show you the live demo, look at your store and put together a plan that fits.</p>
+        <p class="lead" style="margin-top:16px">The exit check tablet and stand are included, so there's nothing to buy. Talk to us: we'll show you the live demo, look at your store and put together a plan that fits.</p>
         <div class="compare">
-          <div><span>Exit check system with AI camera</span><b>Included</b></div>
+          <div><span>Exit check tablet and stand</span><b>Included</b></div>
           <div><span>No new tills to buy</span><b>Included</b></div>
           <div style="border-color:var(--green)"><span>Staff training and support</span><b>Included</b></div>
         </div>
@@ -435,7 +403,7 @@ footer a{text-decoration:none;font-weight:700;color:var(--ink-2)}
         </div>
         <div class="price-body">
           <ul class="ticks">
-            <li><div><b>Installation and setup</b><span>The exit check system with its AI camera, entrance QR banners and signs.</span></div></li>
+            <li><div><b>Installation and setup</b><span>The exit check tablet and stand, entrance QR banners and signs.</span></div></li>
             <li><div><b>Your products loaded</b><span>We import your product list with barcodes and prices.</span></div></li>
             <li><div><b>Staff training</b><span>About an hour, and your team is ready.</span></div></li>
             <li><div><b>Exit check screen and store dashboard</b><span>Live item checks at the exit, today's orders and sales.</span></div></li>
@@ -454,13 +422,13 @@ footer a{text-decoration:none;font-weight:700;color:var(--ink-2)}
       <div class="section-head"><div class="eyebrow">Questions</div><h2 id="faq-h">What store owners ask us.</h2></div>
       <div class="faq">
         <details><summary>Do shoppers need to download an app?</summary><p>No. They scan the QR banner at your entrance and ScanExit opens in their phone's browser.</p></details>
-        <details><summary>Do shoppers use the exit check system themselves?</summary><p>No. Your cashier runs it. The shopper shows their pass, the cashier scans it and puts the items through, and the AI camera checks every one. Because the cashier no longer checks baskets by hand, each one serves many more shoppers at busy times.</p></details>
-        <details><summary>What if a customer doesn't scan something?</summary><p>Every item goes through the exit check system, and its AI camera checks each one against the paid pass. An unpaid item turns the screen red, and your cashier collects for it there and then.</p></details>
-        <details><summary>What if the exit check system is down?</summary><p>Your staff switch to the manual check: they scan the shopper's pass on a phone or tablet and check the basket by hand until the exit check system is back.</p></details>
+        <details><summary>Do shoppers use the exit check system themselves?</summary><p>No. Your cashier runs it. The shopper shows their pass, the cashier scans it, and taps off each item on the tablet as they see it in the basket. Because the cashier no longer reads receipts line by line, each one serves many more shoppers at busy times.</p></details>
+        <details><summary>What if a customer doesn't scan something?</summary><p>Every basket is checked at the exit against the list of what was paid. Anything in the basket that isn't on the list gets added, and your cashier collects for it there and then.</p></details>
+        <details><summary>What if the exit check tablet is down?</summary><p>Your cashier opens the same exit check on any phone with the staff PIN and carries on.</p></details>
         <details><summary>What about customers who don't want to use it?</summary><p>Nothing changes for them. Your normal tills stay open; ScanExit simply takes the pressure off them at peak times.</p></details>
         <details><summary>Does it work with our POS?</summary><p>We start from a product export from your POS (barcodes, names and prices) and keep it updated. A live sync with your POS can follow.</p></details>
         <details><summary>How do payments work?</summary><p>Shoppers pay by card or transfer through Paystack. An order only counts as paid once Paystack confirms it, so fake transfer alerts don't work.</p></details>
-        <details><summary>What happens in the free consultation?</summary><p>We talk through your store: your busy hours, your exit and your POS. We show you ScanExit working in the live demo, then plan the installation of the exit check system and the setup for your store. There's no cost and no commitment.</p></details>
+        <details><summary>What happens in the free consultation?</summary><p>We talk through your store: your busy hours, your exit and your POS. We show you ScanExit working in the live demo, then plan the right exit check and the setup for your store. There's no cost and no commitment.</p></details>
       </div>
     </div>
   </section>
